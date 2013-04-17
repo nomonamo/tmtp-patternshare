@@ -1,239 +1,83 @@
-body, select, input, textarea {
-	font-family: "Lucida Grande", Geneva, Verdana, Arial, sans-serif;
-	color: #777;
-}
+/*
+Copyright (c) 2009, Yahoo! Inc. All rights reserved.
+Code licensed under the BSD License:
+http://developer.yahoo.net/yui/license.txt
+version: 2.7.0
+*/
+html{color:#000;background:#FFF;}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,button,textarea,p,blockquote,th,td{margin:0;padding:0;}table{border-collapse:collapse;border-spacing:0;}fieldset,img{border:0;}address,caption,cite,code,dfn,em,strong,th,var,optgroup{font-style:inherit;font-weight:inherit;}del,ins{text-decoration:none;}li{list-style:none;}caption,th{text-align:left;}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal;}q:before,q:after{content:'';}abbr,acronym{border:0;font-variant:normal;}sup{vertical-align:baseline;}sub{vertical-align:baseline;}legend{color:#000;}input,button,textarea,select,optgroup,option{font-family:inherit;font-size:inherit;font-style:inherit;font-weight:inherit;}input,button,textarea,select{*font-size:100%;}
+/**
+* Vanilla CSS
+*/
+p { font-size: 1em; margin-bottom: 1em; }
+h1 { font-size: 1.4em; margin-bottom: 1em; font-weight: 800; }
+h2 { font-size: 1.2em; margin-bottom: 1em; }
 
-/*a:link {
-	color:#fff;
-	text-decoration: none;
-}
-a:visited {
-	color:#fff;
-	text-decoration: none;
-}*/
+a:link { color: #fff; text-decoration: none }
+a:visited { color: #fff; text-decoration: none }
+ul { color: #fff; }
 
-a#menu{
-	border-left: 2px solid #F0A830;
-	padding-left:3px;
-	font-size: 16px;
-}
+/** main structure **/
+html { background-color: #FCEBB6; color: #777; font-family: "Lucida Grande",Geneva,Verdana,Arial,sans-serif; }
+.wrapper { width: 960px; margin: 10px auto 0 auto; }
 
-ul{
-	color: #fff;
-	font-size:15px;
-}
+.header { padding: 12px 30px 10px 30px; width: 100%; margin-bottom: 20px; color: #fff; background-color: #78C0A8;
+	-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;
+	-moz-border-radius: 1em 4em; border-radius: 1em 4em 1em 4em }
+	.header .logo { display: block; }
+.side-bar { width: 200px; margin-right: 20px; margin-bottom: 20px; }
+.main-content { width: 740px; margin-bottom: 20px; }
+.footer { color: #fff; background-color: #78C0A8; height: 40px; padding-right: 20px; padding-top: 13px; text-align: right; clear: both;
+	-moz-border-radius: 4em 1em; border-radius: 4em 1em 4em 1em }
 
-body{
-	background-color:#FCEBB6;
-}
+/** main blocks **/
+	/*_____-_ header menu _-_____ */
+.headnav { padding-top: 12px; padding-right: 20px }
+	.headnav a { font-size: 16px; font-weight: 200; color: #fff; border-left: 2px solid #F0A830; padding-left: 3px; text-decoration: none; }
+		.headnav a#menu_a { font-size: 18px; text-decoration: underline; }
+
+	/*_____-_ sidebar measures block _-_____ */
+.measwrapper { background-color: #5E412F; padding: 20px;
+	-moz-border-radius: 25px 10px / 10px 25px; border-radius: 25px 10px / 10px 25px; }
+	.measwrapper a { color: #F07818; }
+	.measwrapper h2 { color: #F07818; font-size: 1.2em; margin-bottom: 0; }
+	.measwrapper p { color: white; }
+
+	/*_____-_ drawarea _-_____ */
+.drawarea { height: 600px; padding: 5px; 	background-color: #fff; 
+	-moz-border-radius: 25px 10px / 10px 25px; border-radius: 25px 10px / 10px 25px }
+.drawarea_about { min-height: 600px; background-color: #fff; padding: 20px;
+	-moz-border-radius: 25px 10px / 10px 25px; border-radius: 25px 10px / 10px 25px }
+	.drawarea_about h1 { font-size:  }
+	.drawarea_about a { color: #F07818; }
+
+/** forms **/
+button { background-color: #F07818; border: none; padding: 5px 20px; color: #fff; font-size: 1.4em; cursor: pointer;
+	-moz-border-radius: 4em 1em; border-radius: 3em 1em 3em 1em; }
+	button:hover { -webkit-box-shadow: 2px 2px 1px #333; box-shadow: 2px 2px 1px #333; }
+	button:active { -webkit-box-shadow: inset 2px 2px 1px #333; box-shadow: inset 2px 2px 1px #333; }
+
+input[type=text] { width: 50px; margin: 7px 5px 0; border: none; padding: 2px; border-radius: 5px; -moz-border-radius: 5px }
+select { padding: 3px; border: none; min-width: 100px }
+
+/** some helpers **/
+.wk-col-l { display:inline; float:left; }
+.wk-col-r { display:inline; float:right; }
+/* Clearfix trick to clear floated elements */
+.clearfix:after { content:"."; display:block; clear:both; visibility:hidden; line-height:0; height:0; }
+.clearfix { display:inline-block; } html[xmlns] .clearfix { display:block; } * html .clearfix { height:1%; }
 
 
-.header-holder {
-	background-color: #FCEBB6;
-	margin-bottom: 5px;
-}
+.measurements { font-size: 10px; margin: 5px; padding: 5px; color: #fff }
 
-.header {
-	margin: 0 auto;
-	width: 950px;
-	height: 48px;
-	padding-top: 12px;
-	padding-left: 30px;
-	color: #fff;
-	background-color: #78C0A8;
-	-moz-border-radius: 1em 4em 1em 4em;
-	border-radius: 1em 4em 1em 4em;
-}
-
-.footer{
-	color: #fff;
-	background-color: #78C0A8;
-	height: 70px;
-	width: 950px;
-	margin: 0 auto;
-	padding-right: 20px;
-	padding-top:13px;
-	text-align:right;
-	-moz-border-radius: 4em 1em 4em 1em;
-	border-radius: 4em 1em 4em 1em;
-}
-
-.content-holder {
-	margin-left: auto;
-	margin-right: auto;
-	width: 950px;
-	background-color: #FCEBB6;
-}
-
-.imagebox {
-	width: 210px;
-	height: 235px;
-	float: left;
-	margin-left: 13px;
-	margin-right: 13px;
-	margin-top: 30px;
-	padding-top: 5px;
-	background-color: #f7f7f7;
-	border: solid;
-	border-color: #999;
-	border-width: 1px;
-	text-align: center;
-	font-size: 12px;
-}
-
-.aboutbox {
-	width: 424px;
-	float: left;
-	margin-left: 13px;
-	margin-right: 13px;
-	margin-top: 30px;
-	padding: 13px;
-	background-color: #f7f7f7;
-	border: solid;
-	border-color: #999;
-	border-width: 1px;
-	font-size: 12px;
-}
-
-.rightbar {
-	width: 190px;
-	height: 100%;
-	padding: 30px 5px 30px 5px;
-	float: left;
-	background-color: #eeeeee;
-}
-
-.draw-wrapper {
-	/*width: 930px;
-	height: 700px;*/
-	margin: 0 auto;
-	background-color: #FCEBB6;
-}
-
-.measwrapper {
-	/*width: 190px;
-	float: left;
-	margin-right:10px;*/
-	background-color: #5E412F;
-	-moz-border-radius: 25px 10px / 10px 25px;
-	border-radius: 25px 10px / 10px 25px;
-	padding:10px;
-	width: 170px;
-
-}
-
-.measlabel {
-    display:inline;
-	font-size: 12px;
-	margin-left: 3px;
-}
-
-#measurements input[type=text]{
-	width: 50px;
-	margin: 7px 5px 0 5px;
-	border: none;
-	padding: 2px;
-	border-radius: 5px;
-	-moz-border-radius: 5px;
-}
-
-select{
-	padding: 3px;
-	border: none;
-	min-width:100px;
-}
-
-.disabledmeaslabel {
-    display: none;
-}
-
-.disabledmeasurement {
-	color: #BBB;
-	background-color: #CCC;
-	display: none;
-}
-
-.pmtitle {
-	font-size: 16px;
-	margin: 5px;
-	padding: 5px;
-	color: #fff;
-	font-weight:bold;
-}
-.meastitle {
-	font-size: 16px;
-	color: #fff;
-	font-weight:bold;
-}
-
-.selectDiv {
-	font-size: 10px;
-	margin: 5px;
-	width: 160px;
-	height: 20px;
-	color: #fff;
-}
-
-.measurements {
-	font-size: 10px;
-	/*margin: 5px;
-	padding: 5px;*/
-	color: #fff;	
-}
-
-.drawarea {
-	/*width: 700px;
-	height: 600px;
-	margin: 5px;
-	padding: 5px;
-	float: left;*/
-	background-color: #fff;
-	-moz-border-radius: 25px 10px / 10px 25px;
-	border-radius: 25px 10px / 10px 25px;
-	padding: 15px;
-	min-height: 500px;
-}
-.drawarea_about {
-	width: 700px;
-	height: 600px;
-	margin: 5px;
-	padding:5px;
-	padding-left:10px;
-	float: left;
-	background-color: #fff;
-	-moz-border-radius: 25px 10px / 10px 25px;
-	border-radius: 25px 10px / 10px 25px;
-}
-
-.headnav{
-	float: right;
-	font-size: 18px;
-	font-weight: 200;
-	color: #fff;
-	padding-top: 12px;
-	padding-right: 20px;
-}
-
-#units{
-	border: 2px solid #fff;
-	-moz-border-radius: 10px 25px / 25px 10px;
-	border-radius: 10px 25px / 25px 10px;	
-}
-
-#options{
-	border: 2px solid #fff;
-	margin-top:15px;
-	-moz-border-radius: 10px 25px / 25px 10px;
-	border-radius: 10px 25px / 25px 10px;
-}
-
-#savebuttondiv{
-	text-align:center;
-	}
-
-button{
-	background-color:#F07818;
-	border:none;
-	padding:5px;
-	color:#fff;
-}
+.content-holder { margin-left: auto; margin-right: auto; width: 950px; background-color: #FCEBB6 }
+.imagebox { width: 210px; height: 235px; float: left; margin-left: 13px; margin-right: 13px; margin-top: 30px; padding-top: 5px; background-color: #f7f7f7; border: solid; border-color: #999; border-width: 1px; text-align: center; font-size: 12px }
+.aboutbox { width: 424px; float: left; margin-left: 13px; margin-right: 13px; margin-top: 30px; padding: 13px; background-color: #f7f7f7; border: solid; border-color: #999; border-width: 1px; font-size: 12px }
+.rightbar { width: 190px; height: 100%; padding: 30px 5px; float: left; background-color: #eee }
+.measlabel { display: inline; font-size: 12px; margin-left: 3px }
+.disabledmeaslabel { display: none }
+.disabledmeasurement { color: #BBB; background-color: #CCC; display: none }
+.meastitle { font-size: 16px; color: #fff; font-weight: 700 }
+.selectDiv { font-size: 10px; margin: 5px; width: 160px; height: 20px; color: #fff }
+#units { border: 2px solid #fff; -moz-border-radius: 10px 25px / 25px 10px; border-radius: 10px 25px / 25px 10px }
+#options { border: 2px solid #fff; margin-top: 15px; -moz-border-radius: 10px 25px / 25px 10px; border-radius: 10px 25px / 25px 10px }
+#savebuttondiv { text-align: center }
