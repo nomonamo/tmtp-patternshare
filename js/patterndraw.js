@@ -87,9 +87,9 @@ function drawpattern(){
     svgconststr = "";
     gridsvgstr = "";
     constptstr = "";
-    constopt = document.getElementById("constopt").checked;
-    constptopt = document.getElementById("constptopt").checked;
-    gridopt = document.getElementById("gridopt").checked;
+    constopt = document.getElementById("constopt").checked; //bool show construction lines
+    constptopt = document.getElementById("constptopt").checked; //bool show constructions points
+    gridopt = document.getElementById("gridopt").checked; //bool show grid
     IN = 72;
     CM = 28.346;
 

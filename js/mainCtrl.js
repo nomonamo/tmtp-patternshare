@@ -1,16 +1,19 @@
 'use strinct';
+
   //angular.element(document.getElementById('clippee-app')).scope()
 patshare  = angular.module('patternshare', ['LocalStorageModule'])
   /* advance browser interaction
   .config(function($locationProvider, $routeProvider) { 
     $locationProvider.html5Mode(true); 
   })*/
-  .config(['$routeProvider', function($routeProvider) {
-    $routeProvider.when('/main', {templateUrl: '/partials/home.html', controller: main})
-      .when('/patterns', {templateUrl: '/partials/patterns.html', controller: patternCtl, resolve: patternCtl.resolve})
-      .when('/error', {templateUrl: '/partials/error.html', controller: error})
+  .config(function($locationProvider, $routeProvider) {
+    $locationProvider.hashPrefix("!");
+    $locationProvider.html5Mode(false);
+    $routeProvider.when('/main', {templateUrl: 'partials/home.html', controller: 'main'})
+      .when('/patterns', {templateUrl: 'partials/patterns.html', controller: 'patternCtl', resolve: patternCtl.resolve})
+      .when('/error', {templateUrl: 'partials/error.html', controller: 'error'})
       .otherwise({redirectTo: '/main'});
-  }]);
+  });
 
 function patternCtl ($scope, $http, localStorageService, $location, patterns, settings) { //controller!
   if(patterns == "error" || settings == "error") $location.path('/error');
@@ -25,14 +28,13 @@ function patternCtl ($scope, $http, localStorageService, $location, patterns, se
       'cms': 'centimeters',
       'ins': 'inches'
     }
-  }
+  };
     //load pattern when the selected pattern (actPattern.file) change
   $scope.$watch('ui.actPattern.file', function(){ 
     if(!$scope.ui.actPattern) return; //if null, exit
-    $http.get('/data/patterns/' + $scope.ui.actPattern.file)
+    $http.jsonp('./data/patterns/' + $scope.ui.actPattern.file + '?prefix=JSON_CALLBACK')
       .success(function(data) {
           //save settings to localstorage for further use
-        console.log(data.pattern);
         $scope.ui.actPattern.pattern = data.pattern;
       })
       .error(function(){
@@ -69,7 +71,7 @@ patternCtl.resolve = {
     if(settings){
       deferred.resolve(settings); //return the settings from localstorage
     } else {
-      $http.get('/data/settings.json')
+      $http.jsonp('./data/settingsp.json?prefix=JSON_CALLBACK')
         .success(function(data) {
             //save settings to localstorage for further use
           localStorageService.add('settings', JSON.stringify(data)); //update localstorage
@@ -88,8 +90,9 @@ patternCtl.resolve = {
     if(patterns){
       deferred.resolve(patterns); //return the settings from localstorage
     } else {
-      $http.get('/data/patterns/pattern_list.json')
+      $http.jsonp('./data/patterns/pattern_listp.json?prefix=JSON_CALLBACK')
         .success(function(data) {
+          console.log(data);
             //save patterns to localstorage for further use
           localStorageService.add('patterns', JSON.stringify(data)); //update localstorage
           deferred.resolve(data); //return the settings from defaults
@@ -101,7 +104,7 @@ patternCtl.resolve = {
     }
     return deferred.promise;
   }
-}
+};
 
 function main ($scope, $http, $location) { //controller!
     //home controller, nothing here, just plain html
