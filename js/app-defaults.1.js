@@ -5,8 +5,8 @@ PATTERNS
 var patternStandard = {
 "pattern": {
   "title": "",
-  //"defaults": [ ], //floats
-  "measurements": {}, //strings : floats
+  "defaults": [ ], //floats
+  "measurements": [  ], //strings
   "main": [
     {
       "id": "",
@@ -38,16 +38,8 @@ var patternStandard = {
 var mensshirtblock = {
 "pattern": {
   "title": "Men's Shirt Block",
-  //"defaults": [ "40", "100", "24.4", "44.6", "40", "85", "81" ],
-  "measurements": { 
-		"neck": "40", 
-		"chest": "100", 
-		"armscye_depth": "24.4", 
-		"waist_length": "44.6", 
-		"back_width": "40", 
-		"sleeve_length": "85", 
-		"shirt_length": "81" 
-	}, 
+  "defaults": [ "40", "100", "24.4", "44.6", "40", "85", "81" ],
+  "measurements": [ "neck", "chest", "armscye_depth", "waist_length", "back_width", "sleeve_length", "shirt_length" ], 
   "main": [
     {
       "id": "outline",
@@ -223,19 +215,8 @@ var mensshirtblock = {
 var womensbasicbodice = {
 "pattern": {
   "title": "Women's Basic Bodice Block",
-  //"defaults": [ "88", "70", "21", "12", "41", "37", "34", "20.6", "32.4", "7" ],
-  "measurements": { 
-		"bust": "88", 
-		"waist": "70", 
-		"armscye_depth": "21", 
-		"shoulder": "12", 
-		"nape_to_waist": "41",
-		"neck": "37", 
-		"back_width": "34", 
-		"waist_to_hip": "20.6", 
-		"chest_width": "32.4", 
-		"bust_dart_width": "7" 
-	}, 
+  "defaults": [ "88", "70", "21", "12", "41", "37", "34", "20.6", "32.4", "7" ],
+  "measurements": [ "bust", "waist", "armscye_depth", "shoulder", "nape_to_waist", "neck", "back_width", "waist_to_hip", "chest_width", "bust_dart_width" ], 
   "main": [
     {
       "id": "outline",
@@ -354,13 +335,8 @@ var womensbasicbodice = {
 var womensbasicskirt = {
 "pattern": {
   "title": "Women's Basic Skirt",
-  //"defaults": [ "70", "94", "70", "20.6" ],
-  "measurements": { 
-		"waist": "70", 
-		"hips": "94", 
-		"skirt_length": "70", 
-		"waist_to_hip": "20.6"
-	}, 
+  "defaults": [ "70", "94", "70", "20.6" ],
+  "measurements": [ "waist", "hips", "skirt_length", "waist_to_hip" ], 
   "main": [
     {
       "id": "outline",
