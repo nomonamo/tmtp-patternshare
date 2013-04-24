@@ -3,9 +3,7 @@ vers    date        changes
 0.1     02.27.13    1st release
 0.1.1   02.28.13    added some math
 0.1.2   03.19.13    added more math, added construction options/grid
-0.1.3	04.21.13	DRLZ code refactor
 */
-
 //fix string replace for multiple occurrencies and fix object structure
 //fix zoom!wtf
   //save some IE trouble with console
@@ -16,16 +14,25 @@ if (typeof console === "undefined"){
 
 var patterndraw = patterndraw || {};
 
+patterndraw.rph = patterndraw.rph || {}; // saves the components of the drawing
+
 //set some defaulst settings 
 patterndraw.settings = {
   constopt: false, // show construction lines?
   constptopt: false, // show construction points?
   gridopt: false, // show grid?
   units: 28.346, // cm as default units
-  drawArea: document.getElementById("drawing"),
-  height: 500,
+  drawArea: "drawing2",
+  height: 550,
   width: 700,
-  messages: false // enable or disable debug console notifications
+  messages: true, // enable or disable debug console notifications
+  grid: {
+    dist: [1, 5], //sets grid units
+    color: "white",
+    width: 1
+  },
+  zoom: 1,
+  fit: true //ignore scale and centers drawing 
 };
 
   //update or intialize settings values
@@ -33,7 +40,7 @@ patterndraw.init = function(settings){
   for(var key in settings)
     if(patterndraw.settings.hasOwnProperty(key)) patterndraw.settings[key] = settings[key];
 };
-  
+
   //help changing units
 patterndraw.settings.setinches = function(){
   patterndraw.settings.units = 72;
@@ -43,37 +50,52 @@ patterndraw.settings.setcm = function(){
 };
 
 patterndraw.message = function(message){
-  if(patterndraw.settings.messages) console.log(message)
-}
+  if(patterndraw.settings.messages) console.log(message);
+};
 
   // draw a pattern file with a set of measurements
 patterndraw.drawpattern = function( pattern, meas ){
 
     //process measurements
-  if ( meas ) {
-      //process points
-    pt = patterndraw.draw.calcPoints( pattern, meas );
-    patterndraw.message("patterndraw.settings.units = " + patterndraw.settings.units);
-    
-      // generate svg elements
-    var svgElms = patterndraw.svg.generate( pattern.title );
+  if ( !meas ) { alert("Please enter a number in each measurement box."); return; }
+    //process points
+  pt = patterndraw.draw.calcPoints( pattern, meas );
+  patterndraw.message("patterndraw.settings.units = " + patterndraw.settings.units);
 
-      // generate final svg string
-    var reformedsvg = svgElms.viewBoxheader + svgElms.svgtitle + svgElms.svgtransform; // add headers
-    if (patterndraw.settings.gridopt) { reformedsvg += patterndraw.draw.grid(); } // add the grid
-    if (patterndraw.settings.constopt) { reformedsvg += patterndraw.draw.constopt( pattern.construction ); } // add the construction lines
-    if (patterndraw.settings.constptopt) { reformedsvg += patterndraw.draw.constptopt( pt ); } // add the construction points
-    reformedsvg += patterndraw.draw.patterndraw( pattern.main ); // add the pattern
-    reformedsvg += svgElms.svgend; // svg closing
+    // generate svg elements
+  var svgElms = patterndraw.svg.generate( pattern.title );
 
-	patterndraw.message(patterndraw.settings.drawArea);
-    patterndraw.settings.drawArea.innerHTML = reformedsvg;
+  patterndraw.rph.drawing = Raphael( patterndraw.settings.drawArea, patterndraw.settings.width, patterndraw.settings.height );
 
-  } else {
-    alert("Please enter a number in each measurement box.");
-  }
-  //patterndraw.message(ptarray[1]);
+  var grid = patterndraw.rph.drawing.grid(),
+    constLines = patterndraw.rph.drawing.constopt( pattern.construction ),
+    patt = patterndraw.rph.drawing.pattern( pattern.main ),
+    constPoints = patterndraw.rph.drawing.constptopt(pt);
+
+    // generate final svg string
+  if (!patterndraw.settings.gridopt) { grid.hide(); } // add the grid
+  if (!patterndraw.settings.constopt) { constLines.hide(); } // add the construction lines
+  if (!patterndraw.settings.constptopt) { constPoints.hide(); } // add the construction points
+
+    //center element
+  var gridBox = grid.getBBox();
+  patterndraw.rph.drawing.setViewBox(-20, -20, gridBox.width, gridBox.height, false );
+
+    //return object
+  var drawing = {
+    'grid': grid,
+    'constLines': constLines,
+    'constPoints': constPoints,
+    'hideGrid': function(){ this.grid.hide(); },
+    'showGrid': function(){ this.grid.show(); },
+    'hideConstLines': function(){ this.constLines.hide(); },
+    'showConstLines': function(){ this.constLines.show(); },
+    'hideConstPoints': function(){ this.constPoints.hide(); },
+    'showConstPoints': function(){ this.constPoints.show(); }
+  };
+  return drawing;
 };
+
 
 /////////////////////////////////////////
 /////////////////////////////////////////
@@ -116,7 +138,7 @@ patterndraw.draw.calcPoints = function ( pattern, meas ) {
 
     patterndraw.message(ltr + ".x: " + pattern.points[i].x + " = " + pt[ltr].x);
     patterndraw.message(ltr + ".y: " + pattern.points[i].y + " = " + pt[ltr].y);
-    patterndraw.message("Point "+ ltr +" maxx: " + patterndraw.svg.settings.maxx + ", maxy: " + patterndraw.svg.settings.maxy + ", minx: " + 
+    patterndraw.message("Point "+ ltr +" maxx: " + patterndraw.svg.settings.maxx + ", maxy: " + patterndraw.svg.settings.maxy + ", minx: " +
       patterndraw.svg.settings.minx + ", miny: " + patterndraw.svg.settings.miny);
   }
   //patterndraw.message(pt);
@@ -143,7 +165,147 @@ patterndraw.draw.getMeas = function( measurements ) {
   return measValid ? meas : false;
 };
 
-  //return a svg grid string
+  //return svg object for the construction lines
+Raphael.fn.constopt = function( construction ){
+  patterndraw.message('got to here!');
+
+  var svgconststr, block = this.set(), i, j;
+  for ( i in construction ) {
+    var line = {};
+    if( construction[i].type == 'path'){
+      var svgStr = "";
+      for (j in construction[i].d){
+        svgStr += construction[i].d[j][0];
+        for (var k=1; k < construction[i].d[j].length; k++){
+          var eval0 = eval( construction[i].d[j][k][0] );
+          var eval1 = eval( construction[i].d[j][k][1] );
+          eval0 *= patterndraw.settings.units;
+          eval1 *= patterndraw.settings.units;
+
+          svgStr += eval0 + "," + eval1;
+        }
+      }
+      line = this.path(svgStr);
+    } else if (construction[i].type == 'text') { 
+      line = this.text(construction[i].content)
+    }
+    for (j in construction[i].drawattr){
+      var evaled = eval( construction[i].drawattr[j] );
+      evaled *= patterndraw.settings.units;
+      patterndraw.message("og: " + construction[i].drawattr[j] + "ev: " + evaled);
+      line.attr({j: evaled});
+    }
+    var l;
+    for ( l in construction[i].appearanceattr ){
+      line.attr(l, construction[i].appearanceattr[l]);
+    }
+    block.push(line);
+  }
+
+  return block;
+};
+
+  //return raphael object for the construction points
+Raphael.fn.constptopt = function( points ){
+  var i, block = this.set();
+  for (i in points){
+    var ltr = i,
+      x = points[ltr].x * patterndraw.settings.units,
+      y = points[ltr].y * patterndraw.settings.units;
+
+      var point = this.circle(x, y, 3).attr({'fill':'#000000'});
+      block.push(point);
+      var text = this.text( x, y, ltr + ": (" + points[ltr].x.toFixed(3) + ", " + points[ltr].y.toFixed(3) + ")" )
+        .attr({'fill':'#000000'});
+      block.push(text);
+  }
+  return block;
+};
+
+  //generate pattern
+Raphael.fn.pattern = function ( pattern ) {
+  var block, i , j;
+  block = this.set();
+  for (i in pattern){
+
+    for ( j in pattern[i].drawattr ){
+      var evaled = eval( pattern[i].drawattr[j] );
+      evaled *= patterndraw.settings.units;
+    }
+
+    switch ( pattern[i].type ){
+      case "path":
+        var pathStr = '', path;
+        for (j in pattern[i].d){
+          pathStr += pattern[i].d[j][0]; //first element is string for move or line
+          for ( var k=1; k< pattern[i].d[j].length; k++ ){ //iterate the rest elements (points)
+            var evalx = eval( pattern[i].d[j][k][0]),
+              evaly = eval( pattern[i].d[j][k][1]);
+            evalx *= patterndraw.settings.units;
+            evaly *= patterndraw.settings.units;
+            pathStr += evalx + ',' + evaly;
+          }
+        }
+        path = this.path(pathStr);
+        block.push(path);
+      break;
+      case "text":
+      break;
+    }
+    return block;
+  }
+
+ /* if (patterndraw.rph.grid) patterndraw.rph.grid.remove();
+  var grid = this.set(),
+    numx = patterndraw.svg.settings.svgw / ( patterndraw.settings.units * patterndraw.settings.zoom ),
+    numy = patterndraw.svg.settings.svgh / ( patterndraw.settings.units * patterndraw.settings.zoom );
+*/
+  return block;
+};
+
+Raphael.fn.grid = function () {
+  if (patterndraw.rph.grid) patterndraw.rph.grid.remove();
+  var grid = this.set(), pathStr,
+    numx = patterndraw.svg.settings.svgw / patterndraw.settings.units,
+    numy = patterndraw.svg.settings.svgh / patterndraw.settings.units;
+      //vertical
+  for ( var i=0; i<numx; i++){
+    pathStr = 'M' + (i * patterndraw.settings.units) + ',0' +
+      'l0,' + patterndraw.svg.settings.svgh;
+    var line = this.path(pathStr);
+    if ( i%10 === 0){
+      line.attr({'stroke-width':2,'stroke':'#aaaaff', 'fill':'none'});
+    } else if(i%5 === 0){
+      line.attr({'stroke-width':1,'stroke':'#aaaaff', 'fill':'none'});
+    } else {
+      line.attr({'stroke-width':0.25,'stroke':'#aaaaff', 'fill':'none'});
+    }
+    grid.push(line);
+  }
+    //horizontal
+  for (var j=0; j<numy; j++){
+    pathStr = "M0," + j*patterndraw.settings.units +
+     "l" + patterndraw.svg.settings.svgw  + ",0 ";
+    var line = this.path(pathStr);
+    if ( j%10 === 0 ){
+      line.attr({'stroke-width':2,'stroke':'#aaaaff', 'fill':'none'});
+    } else if ( j%5 === 0 ) {
+      line.attr({'stroke-width':1,'stroke':'#aaaaff', 'fill':'none'});
+    } else {
+      line.attr({'stroke-width':0.25,'stroke':'#aaaaff', 'fill':'none'});;
+    }
+    grid.push(line);
+  }
+  return grid;
+};
+
+/////////////////////////////////////////
+/////////////////////////////////////////
+///    ORIGINAL DRAWING FUNCTIONS    ////
+//////////// (just in case) /////////////
+
+
+  //return a svg grid stringe
 patterndraw.draw.grid = function(){
   var grid = "<g>",
     numx = patterndraw.svg.settings.svgw / patterndraw.settings.units,
@@ -184,7 +346,7 @@ patterndraw.draw.grid = function(){
   //return svg string for the construction lines
 patterndraw.draw.constopt = function( construction ){
   patterndraw.message('got to here!');
-
+console.log(construction)
   var svgconststr = "<g>", i, j;
   for ( i in construction ) {
     patterndraw.message('i = ' + i);
@@ -291,7 +453,7 @@ patterndraw.draw.constptopt = function( points ){
     constptstr += "fill=\"#000000\" ";
     constptstr += "/>";
 
-    constptstr += "<text font-size='20'";
+    constptstr += "<text ";
     constptstr += "x=\"" + x + "\" y=\"" + y + "\"";
     constptstr += " >" + ltr + ": (" + points[ltr].x.toFixed(3) + ", " + points[ltr].y.toFixed(3) + ")";
     constptstr += "</text>";
